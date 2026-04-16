@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Default Title</title>
+    <script>
+        // Function to update the document title based on the "title" parameter in the URL
+        function updateTitleFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const newTitle = params.get('title'); // Get 'title' parameter from URL
+            if (newTitle) {
+                document.title = newTitle; // Update the browser tab title
+            }
+        }
+        // Run the function on page load
+        window.onload = updateTitleFromURL;
+    </script>
+</head>
+<body>
+    <h1>Welcome to Your Local Page</h1>
+    <p>Use the URL parameter <code>?title=YourCustomTitle</code> to rename the browser tab.</p>
+    <p>For example, <code>file:///path/to/your/file.html?title=Hello%20World</code></p>
+</body>
+</html>
