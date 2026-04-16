@@ -1,0 +1,4 @@
+actions.navigate('https://ipchicken.com')
+time.sleep(5)  # Sleep before next action
+
+time.sleep(5)  # Sleep before next action

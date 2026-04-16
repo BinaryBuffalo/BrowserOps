@@ -1,0 +1,186 @@
+actions.key_down('w').perform()
+time.sleep(0.083)  # Delay after key_down('w')
+actions.key_down('d').perform()
+time.sleep(0.056)  # Delay after key_down('d')
+time.sleep(3.572)  # Hold keys for 3.572 seconds
+actions.key_up('d').perform()
+time.sleep(0.014)  # Delay after key_up('d')
+actions.key_up('w').perform()
+time.sleep(0.082)  # Delay after key_up('w')
+time.sleep(1.405)  # Sleep before next action
+
+actions.key_down(Keys.SHIFT).perform()
+time.sleep(0.065)  # Delay after key_down(Keys.SHIFT)
+actions.key_down('d').perform()
+time.sleep(0.058)  # Delay after key_down('d')
+actions.key_down('w').perform()
+time.sleep(0.046)  # Delay after key_down('w')
+time.sleep(4.051)  # Hold keys for 4.051 seconds
+actions.key_up('w').perform()
+time.sleep(0.004)  # Delay after key_up('w')
+actions.key_up('d').perform()
+time.sleep(0.071)  # Delay after key_up('d')
+actions.key_up(Keys.SHIFT).perform()
+time.sleep(0.086)  # Delay after key_up(Keys.SHIFT)
+time.sleep(1.469)  # Sleep before next action
+
+actions.key_down('w').perform()
+time.sleep(0.052)  # Delay after key_down('w')
+actions.key_down('d').perform()
+time.sleep(0.067)  # Delay after key_down('d')
+time.sleep(5.239)  # Hold keys for 5.239 seconds
+actions.key_up('d').perform()
+time.sleep(0.003)  # Delay after key_up('d')
+actions.key_up('w').perform()
+time.sleep(0.066)  # Delay after key_up('w')
+time.sleep(1.475)  # Sleep before next action
+
+actions.key_down(Keys.SHIFT).perform()
+time.sleep(0.021)  # Delay after key_down(Keys.SHIFT)
+actions.key_down('w').perform()
+time.sleep(0.079)  # Delay after key_down('w')
+actions.key_down('a').perform()
+time.sleep(0.033)  # Delay after key_down('a')
+time.sleep(2.691)  # Hold keys for 2.691 seconds
+actions.key_up('a').perform()
+time.sleep(0.042)  # Delay after key_up('a')
+actions.key_up('w').perform()
+time.sleep(0.031)  # Delay after key_up('w')
+actions.key_up(Keys.SHIFT).perform()
+time.sleep(0.006)  # Delay after key_up(Keys.SHIFT)
+time.sleep(1.193)  # Sleep before next action
+
+actions.key_down('a').perform()
+time.sleep(0.074)  # Delay after key_down('a')
+actions.key_down('w').perform()
+time.sleep(0.07)  # Delay after key_down('w')
+time.sleep(2.313)  # Hold keys for 2.313 seconds
+actions.key_up('w').perform()
+time.sleep(0.035)  # Delay after key_up('w')
+actions.key_up('a').perform()
+time.sleep(0.017)  # Delay after key_up('a')
+time.sleep(1.448)  # Sleep before next action
+
+actions.key_down('s').perform()
+time.sleep(0.083)  # Delay after key_down('s')
+actions.key_down('d').perform()
+time.sleep(0.061)  # Delay after key_down('d')
+time.sleep(3.223)  # Hold keys for 3.223 seconds
+actions.key_up('d').perform()
+time.sleep(0.012)  # Delay after key_up('d')
+actions.key_up('s').perform()
+time.sleep(0.077)  # Delay after key_up('s')
+time.sleep(0.94)  # Sleep before next action
+
+actions.key_down(Keys.SHIFT).perform()
+time.sleep(0.005)  # Delay after key_down(Keys.SHIFT)
+actions.key_down('w').perform()
+time.sleep(0.019)  # Delay after key_down('w')
+actions.key_down('a').perform()
+time.sleep(0.082)  # Delay after key_down('a')
+time.sleep(2.432)  # Hold keys for 2.432 seconds
+actions.key_up('a').perform()
+time.sleep(0.072)  # Delay after key_up('a')
+actions.key_up('w').perform()
+time.sleep(0.072)  # Delay after key_up('w')
+actions.key_up(Keys.SHIFT).perform()
+time.sleep(0.084)  # Delay after key_up(Keys.SHIFT)
+time.sleep(1.048)  # Sleep before next action
+
+actions.key_down('d').perform()
+time.sleep(0.064)  # Delay after key_down('d')
+time.sleep(5.259)  # Hold keys for 5.259 seconds
+actions.key_up('d').perform()
+time.sleep(0.045)  # Delay after key_up('d')
+time.sleep(0.91)  # Sleep before next action
+
+actions.key_down(Keys.SHIFT).perform()
+time.sleep(0.02)  # Delay after key_down(Keys.SHIFT)
+actions.key_down('a').perform()
+time.sleep(0.058)  # Delay after key_down('a')
+actions.key_down('w').perform()
+time.sleep(0.022)  # Delay after key_down('w')
+time.sleep(5.24)  # Hold keys for 5.24 seconds
+actions.key_up('w').perform()
+time.sleep(0.062)  # Delay after key_up('w')
+actions.key_up('a').perform()
+time.sleep(0.055)  # Delay after key_up('a')
+actions.key_up(Keys.SHIFT).perform()
+time.sleep(0.035)  # Delay after key_up(Keys.SHIFT)
+time.sleep(1.01)  # Sleep before next action
+
+actions.key_down('a').perform()
+time.sleep(0.075)  # Delay after key_down('a')
+actions.key_down('s').perform()
+time.sleep(0.035)  # Delay after key_down('s')
+time.sleep(4.556)  # Hold keys for 4.556 seconds
+actions.key_up('s').perform()
+time.sleep(0.083)  # Delay after key_up('s')
+actions.key_up('a').perform()
+time.sleep(0.019)  # Delay after key_up('a')
+time.sleep(0.563)  # Sleep before next action
+
+actions.key_down('s').perform()
+time.sleep(0.026)  # Delay after key_down('s')
+actions.key_down('d').perform()
+time.sleep(0.09)  # Delay after key_down('d')
+time.sleep(4.935)  # Hold keys for 4.935 seconds
+actions.key_up('d').perform()
+time.sleep(0.089)  # Delay after key_up('d')
+actions.key_up('s').perform()
+time.sleep(0.038)  # Delay after key_up('s')
+time.sleep(1.69)  # Sleep before next action
+
+actions.key_down('d').perform()
+time.sleep(0.058)  # Delay after key_down('d')
+actions.key_down('w').perform()
+time.sleep(0.022)  # Delay after key_down('w')
+time.sleep(5.143)  # Hold keys for 5.143 seconds
+actions.key_up('w').perform()
+time.sleep(0.063)  # Delay after key_up('w')
+actions.key_up('d').perform()
+time.sleep(0.05)  # Delay after key_up('d')
+time.sleep(1.752)  # Sleep before next action
+
+actions.key_down('a').perform()
+time.sleep(0.021)  # Delay after key_down('a')
+actions.key_down('s').perform()
+time.sleep(0.019)  # Delay after key_down('s')
+time.sleep(5.138)  # Hold keys for 5.138 seconds
+actions.key_up('s').perform()
+time.sleep(0.016)  # Delay after key_up('s')
+actions.key_up('a').perform()
+time.sleep(0.084)  # Delay after key_up('a')
+time.sleep(0.916)  # Sleep before next action
+
+actions.key_down('s').perform()
+time.sleep(0.072)  # Delay after key_down('s')
+actions.key_down('a').perform()
+time.sleep(0.086)  # Delay after key_down('a')
+time.sleep(4.037)  # Hold keys for 4.037 seconds
+actions.key_up('a').perform()
+time.sleep(0.041)  # Delay after key_up('a')
+actions.key_up('s').perform()
+time.sleep(0.017)  # Delay after key_up('s')
+time.sleep(0.806)  # Sleep before next action
+
+actions.key_down('s').perform()
+time.sleep(0.019)  # Delay after key_down('s')
+actions.key_down('a').perform()
+time.sleep(0.012)  # Delay after key_down('a')
+time.sleep(3.424)  # Hold keys for 3.424 seconds
+actions.key_up('a').perform()
+time.sleep(0.083)  # Delay after key_up('a')
+actions.key_up('s').perform()
+time.sleep(0.058)  # Delay after key_up('s')
+time.sleep(1.193)  # Sleep before next action
+
+# Hold 'G' for 7 seconds at the end of the macro
+actions.key_down('g').perform()
+time.sleep(0.01)  # Slight delay after key_down('g')
+actions.perform()
+time.sleep(7)  # Hold 'G' for 7 seconds
+actions.key_up('g').perform()
+time.sleep(0.01)  # Slight delay after key_up('g')
+actions.perform()
+
