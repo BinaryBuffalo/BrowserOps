@@ -4,176 +4,197 @@
 
 This project is a lightweight multi-browser automation framework designed to manage and control multiple isolated browser instances from a single interface.
 
-It combines a PyQt-based GUI with Playwright-powered browser automation to provide:
-- Periodic screenshot monitoring (not real-time)
+It combines a PyQt-based GUI with Playwright-powered Firefox automation to provide:
+- Periodic screenshot-based monitoring (not real-time streaming)
 - Macro execution across instances
 - Scalable multi-session handling
 
-This repository is a **proof-of-concept (POC)** and is not intended to be a production-ready system. There are no planned future developments.
+This repository is a **proof-of-concept (POC)**. It is not production software and has no planned future development.
 
 ---
 
-## Development Hardware
+## Design Approach
 
-- AMD Ryzen 7 5700X (8-core, 3.4 GHz)  
-- 32 GB DDR4 RAM  
-- NVIDIA GTX 3080 Ti  
+This project was built with a different approach compared to traditional browser automation tools.
 
-This hardware is not modern high-end, but was sufficient for development and testing.
+### Why Not Selenium
 
----
+In testing, Selenium was unable to reliably handle even a single instance under the same workload without instability and excessive overhead. Its architecture introduces unnecessary abstraction layers, background processes, and resource contention that scale poorly when attempting multi-instance execution.
 
-## Core Architecture
-
-### GUI (HUDGUI)
-
-The GUI is built using PyQt and is responsible for:
-- Displaying browser instances in a grid
-- Showing periodically updated screenshots
-- Tracking process IDs (PID)
-- Allowing macro selection and execution
-
-The GUI does not rely on:
-- Admin privileges  
-- Process hooking  
-- External APIs  
-
-All data is handled locally and statically.
+This implementation avoids those issues by:
+- Using Playwright with Firefox persistent contexts
+- Assigning a fully isolated profile per instance
+- Avoiding shared parent process contention
+- Keeping execution simple and predictable
 
 ---
 
-### Browser Engine
+## Browser Engine Choice
 
-The project uses Playwright with **Firefox**, not Chrome.
+The framework uses **Playwright with Firefox**, not Chrome.
 
-This change was made because:
-- Firefox provides more stable profile isolation across multiple instances
-- Chrome-based approaches introduced issues with profile handling at scale
+Reasoning:
+- Firefox provides more reliable profile isolation across multiple instances
+- Chrome-based approaches introduced instability and profile conflicts when scaled
+- Firefox persistent contexts behave more predictably under concurrent workloads
+
+---
+
+## Screenshot-Based Monitoring (Design Rationale)
+
+At a glance, using screenshots to represent browser state may appear inefficient or “caveman-like.” However, in this implementation, it is intentionally leveraged in an optimized way.
+
+Key points:
+- The browser is already rendering frames internally
+- Playwright (Firefox) provides a built-in screenshot function
+- This function is lightweight when used at controlled intervals
+
+### Implementation
 
 Each instance:
-- Runs with its own persistent profile directory
-- Uses a unique user agent
-- Runs as an independent process
+- Captures a screenshot at a fixed interval (default ~5–10 seconds)
+- Saves to:
+  ```
+  /screenshots/user{N}.png
+  ```
+- The GUI updates using a file watcher
+
+### Performance Characteristics
+
+- At ~5 second intervals, overhead is negligible
+- On stronger systems, 1 screenshot per second per instance is feasible
+- No screen capture hooks or GPU duplication is used
+
+This approach avoids:
+- Streaming overhead
+- Window capture APIs
+- External rendering pipelines
 
 ---
 
-### Proxy Support
+## Proxy Parser
 
-The parser currently supports:
-- HTTP proxies  
-- HTTPS proxies  
+Supported:
+- HTTP
+- HTTPS
 
-SOCKS5 support was intentionally removed from the parser because:
-- Development and testing only used HTTP/HTTPS proxies
-- Additional proxy formats were unnecessary for this use case
+Removed:
+- SOCKS5
 
-The parser can be extended to support SOCKS5 again if needed.
+Reason:
+- Development only required HTTP/HTTPS proxies
+- SOCKS5 support was removed to simplify the parser
+
+The parser can be extended to support SOCKS5 again if required.
 
 ---
 
-### Instance Launching
+## Instance Launching
 
-There is **no built-in launcher/orchestrator script** for spinning up multiple instances automatically.
+There is **no built-in launcher system**.
 
-Each browser instance is launched manually:
+Instances are launched manually:
 
 ```
 python codapp.py PROXY_IP PORT
 ```
 
-or
+or:
 
 ```
 python codapp.py PROXY_IP PORT USERNAME PASSWORD
 ```
 
-If automation is required, users are expected to:
-- Write their own launcher script
-- Adapt it to their specific environment and use case
+Automation is intentionally left to the user because:
+- Launch strategies vary by environment
+- Resource allocation differs per system
+- Use cases are not standardized
 
-There is no universal launcher included because environments and requirements vary significantly.
-
----
-
-### Instance Identification
-
-Each browser instance:
-- Loads a local HTML file (`titleselector.html`)
-- Receives a unique identifier (`user1`, `user2`, etc.)
-- Uses that identifier to map:
-  - GUI display
-  - Screenshot files
-  - Macro targeting
+Users can create custom scripts to spawn instances as needed.
 
 ---
 
-### Screenshot System
+## Macro System
 
-Each instance:
-- Captures screenshots at a fixed interval
-- Saves them as:
+Macros are stored as `.txt` files and executed dynamically.
 
-```
-/screenshots/user{N}.png
-```
-
-The GUI updates when files change.
-
-This is **not real-time streaming**, only periodic capture.
-
----
-
-### Macro System
-
-Macros are plain `.txt` files stored in the `MACROS/` directory.
-
-Execution behavior:
-- Selecting a macro copies it to `macro.txt`
-- All instances detect and execute it
-
-Instance-specific macros:
-```
-macro1.txt → instance 1 only
-macro2.txt → instance 2 only
-```
+### Execution Model
+- Global macro: `macro.txt` → runs on all instances
+- Instance macro: `macro1.txt`, `macro2.txt`, etc.
 
 Macros are:
 - Parsed in chunks
 - Executed sequentially
-- Based on simple Python-style instructions (keyboard input, delays, navigation)
+- Interpreted at runtime
+
+### Macro Builder
+
+The project also includes a `macrobuilder.py` utility:
+
+- Generates randomized macro sequences
+- Helps automate repetitive input patterns
+- Reduces manual scripting effort
 
 ---
 
-## Performance Notes
+## Authentic Execution Model
 
-Testing showed:
-- 16 browser instances ran without exceeding ~50% CPU usage on the development machine
+The system avoids artificial or injected behavior.
 
-This is **not a hard limit**.
+Actions are executed through:
+- Playwright keyboard inputs
+- Page navigation
+- Timed delays
 
-The 16-instance count was simply the limit for the developer’s hardware and original use case.
+Because of this:
+- Behavior is consistent with real user interaction
+- No external hooks or memory manipulation are used
+- Execution remains stable across instances
+
+---
+
+## Performance Observations
+
+Testing was conducted using 16 concurrent browser instances running a browser-based game workload.
+
+### Observed Metrics (ShellShockers Test)
+
+- CPU Usage:
+  - Average: 25–50%
+  - Peak: ~55%
+- RAM Usage:
+  - Estimated 300–500 MB per instance
+  - Total usage ~6–8 GB across all instances
+- Stability:
+  - No crashes observed during sustained runtime
+  - No major frame or input desync issues
+
+### Important Note
+
+- 16 instances is **not a hard limit**
+- This was the limit of the development machine and original use case
 
 With stronger hardware:
-- More instances can be handled
-- Scaling is primarily CPU-dependent
+- Higher instance counts are achievable
+- Scaling is primarily CPU-bound
 
 ---
 
 ## Limitations
 
 - Proof-of-concept only
-- No automated launcher system
+- No built-in launcher/orchestration system
 - Limited proxy parser (HTTP/HTTPS only)
-- No fault tolerance or recovery system
-- Macro system requires manual scripting
+- No fault tolerance system
+- Macro system requires basic scripting understanding
 
 ---
 
 ## Final Notes
 
-This project exists to demonstrate:
-- Efficient multi-instance browser handling
-- Reduced overhead compared to traditional approaches
-- A simplified architecture for browser orchestration
+This project demonstrates:
+- A low-overhead approach to multi-browser automation
+- Practical scaling without heavy frameworks
+- A simplified and controllable architecture
 
-Only functionality that is implemented and observable in the codebase is documented here.
+All functionality described here is directly based on the implemented codebase.
