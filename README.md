@@ -1,242 +1,179 @@
-# BrowserOps
-This project is a POC lightweight multi-browser automation framework built to efficiently manage and control multiple isolated browser instances from a single interface. It combines a PyQt-based GUI with Playwright-powered browser automation to provide periodic screenshot monitoring, macro execution, and scalable session handling.
-
-
 # Multi-Browser Automation Framework (POC)
 
 ## Overview
 
-This project is a proof-of-concept (POC) multi-browser automation framework designed to manage and coordinate multiple isolated browser instances with minimal resource overlap.
+This project is a lightweight multi-browser automation framework designed to manage and control multiple isolated browser instances from a single interface.
 
-The system focuses on:
-- Efficient multi-instance browser control
-- Lightweight GUI-based management
-- Macro-driven automation
-- Reduced system overhead compared to traditional approaches (e.g., Selenium)
+It combines a PyQt-based GUI with Playwright-powered browser automation to provide:
+- Periodic screenshot monitoring (not real-time)
+- Macro execution across instances
+- Scalable multi-session handling
 
-This is **not a final production release**, but a functional prototype intended for experimentation, learning, and further development.
+This repository is a **proof-of-concept (POC)** and is not intended to be a production-ready system. There are no planned future developments.
 
 ---
 
 ## Development Hardware
 
-- **CPU:** AMD Ryzen 7 5700X (8-core, 3.4 GHz)  
-- **RAM:** 32 GB DDR4  
-- **GPU:** NVIDIA GTX 3080 Ti (MSI)
+- AMD Ryzen 7 5700X (8-core, 3.4 GHz)  
+- 32 GB DDR4 RAM  
+- NVIDIA GTX 3080 Ti  
 
-While not cutting-edge, this hardware provides a cost-effective and capable environment for development and testing.
-
----
-
-## Project Intent
-
-This project is intended to demonstrate:
-- How large-scale browser orchestration can be implemented efficiently
-- Alternative architectural approaches to traditional automation frameworks
-- A foundation that may later evolve into an API-driven automation system
-
-This repository is provided for **educational and research purposes only**.
+This hardware is not modern high-end, but was sufficient for development and testing.
 
 ---
 
 ## Core Architecture
 
-### 1. GUI Management (HUDGUI)
+### GUI (HUDGUI)
 
-The system uses a custom PyQt-based GUI (`hudgui.py`) that:
-- Displays all active browser instances in a grid layout
-- Shows live screenshots of each instance
-- Tracks process IDs (PIDs)
-- Allows interaction with individual browser windows
-- Provides macro selection and execution control
+The GUI is built using PyQt and is responsible for:
+- Displaying browser instances in a grid
+- Showing periodically updated screenshots
+- Tracking process IDs (PID)
+- Allowing macro selection and execution
 
-Key design choices:
-- No admin privileges required
-- No process hooking
-- Static data handling instead of continuous API polling
+The GUI does not rely on:
+- Admin privileges  
+- Process hooking  
+- External APIs  
+
+All data is handled locally and statically.
 
 ---
 
-### 2. Browser Instance Management
+### Browser Engine
 
-Each browser instance is launched via:
+The project uses Playwright with **Firefox**, not Chrome.
 
-```bash
+This change was made because:
+- Firefox provides more stable profile isolation across multiple instances
+- Chrome-based approaches introduced issues with profile handling at scale
+
+Each instance:
+- Runs with its own persistent profile directory
+- Uses a unique user agent
+- Runs as an independent process
+
+---
+
+### Proxy Support
+
+The parser currently supports:
+- HTTP proxies  
+- HTTPS proxies  
+
+SOCKS5 support was intentionally removed from the parser because:
+- Development and testing only used HTTP/HTTPS proxies
+- Additional proxy formats were unnecessary for this use case
+
+The parser can be extended to support SOCKS5 again if needed.
+
+---
+
+### Instance Launching
+
+There is **no built-in launcher/orchestrator script** for spinning up multiple instances automatically.
+
+Each browser instance is launched manually:
+
+```
 python codapp.py PROXY_IP PORT
 ```
 
-or with authentication:
+or
 
-```bash
+```
 python codapp.py PROXY_IP PORT USERNAME PASSWORD
 ```
 
-#### Features:
-- Each instance runs in its own persistent profile directory
-- Unique user agent per instance (from `useragents.txt`)
-- Isolated process execution to prevent resource contention
-- Proxy support (HTTP only)
+If automation is required, users are expected to:
+- Write their own launcher script
+- Adapt it to their specific environment and use case
+
+There is no universal launcher included because environments and requirements vary significantly.
 
 ---
 
-### 3. Instance Identification
+### Instance Identification
 
 Each browser instance:
-- Loads `titleselector.html`
-- Receives a unique identifier (`user1`, `user2`, etc.) via query parameters
-- Synchronizes instance identity before profile data loads
-
-This ensures consistent mapping between:
-- GUI elements
-- Browser instances
-- Screenshot feeds
-- Macro execution targets
+- Loads a local HTML file (`titleselector.html`)
+- Receives a unique identifier (`user1`, `user2`, etc.)
+- Uses that identifier to map:
+  - GUI display
+  - Screenshot files
+  - Macro targeting
 
 ---
 
-### 4. Screenshot Monitoring
+### Screenshot System
 
 Each instance:
-- Captures screenshots at regular intervals
+- Captures screenshots at a fixed interval
 - Saves them as:
 
 ```
 /screenshots/user{N}.png
 ```
 
-The GUI automatically updates using a file watcher, providing near real-time visibility into all running sessions.
+The GUI updates when files change.
+
+This is **not real-time streaming**, only periodic capture.
 
 ---
 
-### 5. Macro Execution System
+### Macro System
 
-Macros are simple `.txt` files stored in the `MACROS/` directory.
+Macros are plain `.txt` files stored in the `MACROS/` directory.
 
-#### Execution Model:
-- Selecting a macro copies it to:
-  ```
-  ./macro.txt
-  ```
+Execution behavior:
+- Selecting a macro copies it to `macro.txt`
 - All instances detect and execute it
 
-#### Instance-Specific Macros:
-
+Instance-specific macros:
 ```
-macro1.txt → only runs on instance 1
-macro2.txt → only runs on instance 2
+macro1.txt → instance 1 only
+macro2.txt → instance 2 only
 ```
 
-#### Macro Format:
+Macros are:
 - Parsed in chunks
-- Supports:
-  - Keyboard input
-  - Navigation
-  - Delays (`time.sleep`)
-- Executed sequentially using async locking
+- Executed sequentially
+- Based on simple Python-style instructions (keyboard input, delays, navigation)
 
 ---
 
-## Why Not Selenium?
+## Performance Notes
 
-Traditional tools like Selenium introduce several limitations:
+Testing showed:
+- 16 browser instances ran without exceeding ~50% CPU usage on the development machine
 
-- Excessive abstraction and unused code
-- Limited control over low-level behavior
-- Poor handling of multi-instance scaling
-- Shared process/resource contention
+This is **not a hard limit**.
 
-### Key Issue
+The 16-instance count was simply the limit for the developer’s hardware and original use case.
 
-When multiple browser instances share a parent PID:
-- Threads compete for the same CPU core
-- Resource contention increases
-- Performance degrades significantly
-
----
-
-## Design Advantages
-
-This implementation avoids those issues by:
-
-- Assigning independent processes per instance
-- Using Playwright with persistent contexts
-- Avoiding shared execution pipelines
-- Minimizing background overhead
-
-### Result
-
-- Lower CPU usage
-- Reduced memory overhead
-- Improved scalability
-
----
-
-## Performance Observations
-
-Testing with 16 simultaneous browser instances showed:
-
-- CPU usage remained below ~50%
-- Stable memory consumption
-- Minimal performance degradation
-
-Primary bottlenecks:
-- CPU limitations
-- Page complexity (heavy sites increase load times)
-
----
-
-## Scalability Considerations
-
-For larger workloads:
-- Splitting instances across multiple machines is recommended
-- Example:
-  - Machine A: 8 instances
-  - Machine B: 8 instances
-
-This improves:
-- Load distribution
-- Responsiveness
-- Stability
+With stronger hardware:
+- More instances can be handled
+- Scaling is primarily CPU-dependent
 
 ---
 
 ## Limitations
 
-- Not production hardened
-- Limited proxy protocol support (HTTP only)
-- No built-in fault tolerance
-- Macro system requires manual scripting knowledge
+- Proof-of-concept only
+- No automated launcher system
+- Limited proxy parser (HTTP/HTTPS only)
+- No fault tolerance or recovery system
+- Macro system requires manual scripting
 
 ---
 
-## Future Development
+## Final Notes
 
-Planned improvements include:
+This project exists to demonstrate:
+- Efficient multi-instance browser handling
+- Reduced overhead compared to traditional approaches
+- A simplified architecture for browser orchestration
 
-- Conversion into a structured API
-- Improved macro scripting interface
-- Enhanced error handling
-- Broader proxy support
-- Performance optimizations
-
----
-
-## Disclaimer
-
-This project is provided strictly for educational and research purposes.
-
-Users are responsible for ensuring their use of this software complies with:
-- Applicable laws
-- Platform terms of service
-- Ethical standards
-
----
-
-## Summary
-
-This project demonstrates an alternative approach to browser automation focused on:
-- Efficiency
-- Scalability
-- Simplicity
-
-It serves as a foundation for further experimentation and development in multi-instance browser orchestration.
+Only functionality that is implemented and observable in the codebase is documented here.
